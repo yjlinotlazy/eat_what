@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+"""Core planning logic for weekly menu selection."""
+
 from dataclasses import dataclass
 from typing import Iterable
 import random
@@ -9,12 +11,14 @@ from .storage import Recipe
 
 @dataclass(frozen=True)
 class PlanResult:
+    """Planning output with selected recipes and summary stats."""
     recipes: tuple[Recipe, ...]
     total_time: int
     ingredient_overlap: int
 
 
 class WeeklyPlanner:
+    """Planner that selects recipes with time and overlap constraints."""
     def __init__(
         self,
         recipes: Iterable[Recipe],
@@ -34,6 +38,7 @@ class WeeklyPlanner:
         max_overlap: int = 6,
         max_attempts: int = 200,
     ) -> PlanResult:
+        """Build a weekly plan and append 3 extra veg dishes if possible."""
         if not self._recipes:
             raise ValueError("No recipes available to plan.")
 
@@ -92,6 +97,7 @@ class WeeklyPlanner:
     def _filter_by_time(
         self, recipes: list[Recipe], max_total_time_per_dish: int | None
     ) -> list[Recipe]:
+        """Filter recipes by per-dish total time."""
         if max_total_time_per_dish is None:
             return list(recipes)
         return [r for r in recipes if r.total_time <= max_total_time_per_dish]
@@ -102,6 +108,7 @@ class WeeklyPlanner:
         num_dishes: int,
         with_replacement=False
     ) -> list[Recipe] | None:
+        """Sample dishes with or without replacement."""
         if not with_replacement:
             selection: list[Recipe] = self._random.sample(recipes, num_dishes)
         else:
@@ -111,6 +118,7 @@ class WeeklyPlanner:
 
     @staticmethod
     def _ingredient_overlap(recipes: Iterable[Recipe]) -> int:
+        """Count repeated ingredients across recipes."""
         counts: dict[str, int] = {}
         for recipe in recipes:
             for ingredient in recipe.ingredients:

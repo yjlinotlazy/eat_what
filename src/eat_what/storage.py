@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+"""CSV storage helpers for recipes."""
+
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Iterable
@@ -9,6 +11,7 @@ import pandas as pd
 
 @dataclass(frozen=True)
 class Recipe:
+    """Immutable recipe record."""
     name: str
     ingredients: tuple[str, ...]
     prep_time: int
@@ -17,6 +20,7 @@ class Recipe:
 
     @property
     def total_time(self) -> int:
+        """Total minutes required for the recipe."""
         return self.prep_time + self.cook_time
 
 
@@ -30,11 +34,13 @@ REQUIRED_COLUMNS = {
 
 
 def _split_list(value: str) -> tuple[str, ...]:
+    """Split a semicolon-separated list into a tuple."""
     items = [item.strip() for item in value.split(";") if item.strip()]
     return tuple(items)
 
 
 def load_recipes(path: str | Path) -> list[Recipe]:
+    """Load recipes from a CSV file."""
     path = Path(path)
     if not path.exists():
         raise FileNotFoundError(f"Recipes file not found: {path}")
@@ -60,6 +66,7 @@ def load_recipes(path: str | Path) -> list[Recipe]:
 
 
 def save_recipes(path: str | Path, recipes: Iterable[Recipe]) -> None:
+    """Write recipes to a CSV file."""
     rows = []
     for recipe in recipes:
         rows.append(

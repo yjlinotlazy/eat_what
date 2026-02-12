@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+"""CLI for generating a weekly meal plan and shopping list."""
+
 import argparse
 from collections import Counter
 from pathlib import Path
@@ -11,6 +13,7 @@ from .storage import load_recipes
 
 
 def build_parser() -> argparse.ArgumentParser:
+    """Build the argument parser for the planner CLI."""
     parser = argparse.ArgumentParser(description="Generate a weekly meal plan.")
     parser.add_argument(
         "--recipes",
@@ -45,6 +48,7 @@ def build_parser() -> argparse.ArgumentParser:
 
 
 def print_plan(result) -> None:
+    """Print the planned menu and shopping list in CN/EN."""
     print("\n这周将就吃：")
     print("-")
     for idx, recipe in enumerate(result.recipes, start=1):
@@ -72,7 +76,9 @@ def print_plan(result) -> None:
         display_name = f"{cn_name} ({ingredient})" if cn_name else ingredient
         print(f"{display_name} x{count}")
 
+
 def main() -> int:
+    """Entry point for the meal planner CLI."""
     parser = build_parser()
     args = parser.parse_args()
 

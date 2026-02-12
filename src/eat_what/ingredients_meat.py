@@ -1,8 +1,11 @@
 from dataclasses import dataclass
 from enum import Enum
 
+"""Meat ingredient metadata (EN name, CN name, and kind)."""
+
 
 class MeatKind(Enum):
+    """High-level meat category."""
     PORK = "pork"
     BEEF = "beef"
     CHICKEN = "chicken"
@@ -10,8 +13,10 @@ class MeatKind(Enum):
     DUCK = "duck"
     FISH = "fish"
 
+
 @dataclass(frozen=True)
 class MeatIngredient:
+    """Meat ingredient with kind and Chinese name."""
     kind: MeatKind
     cn: str
 
