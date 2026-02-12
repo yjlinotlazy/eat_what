@@ -1,11 +1,19 @@
 from __future__ import annotations
 
-"""Core planning logic for weekly menu selection."""
+"""Core planning logic for weekly menu selection.
+Overall logic:
+- Filter recipes by optional per-dish time limit.
+- Build a meat-heavy weekly plan of length `days` (default 7), trying to
+  minimize ingredient overlap and stay under a weekly time cap.
+- If any fish recipes exist, force at least one fish dish in the meat plan.
+- Append 3 extra veg dishes (with replacement) as a best-effort add-on.
+"""
 
 from dataclasses import dataclass
 from typing import Iterable
 import random
 
+from .ingredients_meat import INGREDIENT_MEAT, MeatKind
 from .storage import Recipe
 
 
@@ -39,6 +47,8 @@ class WeeklyPlanner:
         max_attempts: int = 200,
     ) -> PlanResult:
         """Build a weekly plan and append 3 extra veg dishes if possible."""
+
+        # Recipe collection and validation
         if not self._recipes:
             raise ValueError("No recipes available to plan.")
 
@@ -49,18 +59,39 @@ class WeeklyPlanner:
         meat_target = self._days
 
         meat_recipes = [r for r in recipes if r.has_meat]
+        fish_names = {
+            name for name, item in INGREDIENT_MEAT.items() if item.kind == MeatKind.FISH
+        }
+        fish_recipes = [
+            r for r in meat_recipes if any(ing in fish_names for ing in r.ingredients)
+        ]
         veg_recipes = [r for r in recipes if not r.has_meat]
 
         if not meat_recipes:
             return None
 
+        # Build a plan for meat
         best_meat: list[Recipe] | None = None
         best_total_time: int = 0
         best_overlap: int = 0
 
-        # Build a plan for meat
         for _ in range(max_attempts):
-            meat_selection = self._sample_dishes(meat_recipes, meat_target)
+            if fish_recipes:
+                fish_pick = self._sample_dishes(fish_recipes, 1)
+                if not fish_pick:
+                    continue
+                remaining_meat = [r for r in meat_recipes if r not in fish_pick]
+                if meat_target > 1 and len(remaining_meat) < meat_target - 1:
+                    continue
+                meat_selection = list(fish_pick)
+                if meat_target > 1:
+                    rest = self._sample_dishes(remaining_meat, meat_target - 1)
+                    if not rest:
+                        continue
+                    meat_selection.extend(rest)
+                self._random.shuffle(meat_selection)
+            else:
+                meat_selection = self._sample_dishes(meat_recipes, meat_target)
             if not meat_selection:
                 continue
 

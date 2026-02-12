@@ -3,10 +3,13 @@ from __future__ import annotations
 """CSV storage helpers for recipes."""
 
 from dataclasses import dataclass
+import logging
 from pathlib import Path
 from typing import Iterable
 
 import pandas as pd
+
+logger = logging.getLogger(__name__)
 
 
 @dataclass(frozen=True)
@@ -40,7 +43,7 @@ def _split_list(value: str) -> tuple[str, ...]:
 
 
 def load_recipes(path: str | Path) -> list[Recipe]:
-    """Load recipes from a CSV file."""
+    """Load recipes from a CSV file, with minimal format validation"""
     path = Path(path)
     if not path.exists():
         raise FileNotFoundError(f"Recipes file not found: {path}")
@@ -51,16 +54,20 @@ def load_recipes(path: str | Path) -> list[Recipe]:
         raise ValueError(f"Missing columns in recipes file: {sorted(missing)}")
 
     recipes: list[Recipe] = []
-    for _, row in df.iterrows():
-        recipes.append(
-            Recipe(
-                name=str(row["name"]).strip(),
-                ingredients=_split_list(str(row["ingredients"]).strip()),
-                prep_time=int(row["prep_time"]),
-                cook_time=int(row["cook_time"]),
-                has_meat=bool(row["has_meat"]),
+    for idx, row in df.iterrows():
+        try:
+            recipes.append(
+                Recipe(
+                    name=str(row["name"]).strip(),
+                    ingredients=_split_list(str(row["ingredients"]).strip()),
+                    prep_time=int(row["prep_time"]),
+                    cook_time=int(row["cook_time"]),
+                    has_meat=bool(row["has_meat"]),
+                )
             )
-        )
+        except Exception as exc:
+            logger.warning("Invalid recipe row at index %s: %s", idx, exc)
+            continue
 
     return recipes
 
