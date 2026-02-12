@@ -49,8 +49,14 @@ def build_parser() -> argparse.ArgumentParser:
         help="Max repeated ingredient count allowed before fallback.",
     )
     parser.add_argument(
+        "--veg-dishes",
+        "-v",
+        type=int,
+        default=3,
+        help="Number of veg dishes to append to results.",
+    )
+    parser.add_argument(
         "--seed",
-        "-s",
         type=int,
         default=None,
         help="Random seed for reproducibility.",
@@ -150,6 +156,7 @@ def main() -> int:
         max_total_time_per_dish=args.max_time,
         max_weekly_time=args.max_weekly_time,
         max_overlap=args.max_overlap,
+        veg_dishes=args.veg_dishes,
     )
 
     print_plan(result)

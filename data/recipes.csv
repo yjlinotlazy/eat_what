@@ -1,14 +1,14 @@
-cook_time,has_meat,ingredients,name,prep_time
-60,True,pork belly,红烧肉,15
-90,True,beef brisket;potato,土豆炖牛腩,20
-10,False,cabbage,手撕包菜,5
-30,True,chicken thigh,照烧鸡腿,10
-30,True,chicken wings,烤鸡翅,10
-40,True,chicken drumstick,烤鸡腿,10
-30,True,salmon;tofu,三文鱼豆腐,20
-60,True,pork shoulder;vermicelli,猪肉炖粉条,20
-30,True,pork ribs,豉汁排骨,15
-15,False,winter melon,炒冬瓜,8
-10,False,Sigua,丝瓜鸡蛋汤,10
-10,False,brussel sprouts,蚝油小包菜,15
-10,False,tofu;spinach,菠菜豆腐汤,10
+cook_time,has_meat,ingredients,name,prep_time,spicy
+60,True,pork belly,红烧肉,15,False
+90,True,beef brisket;potato,土豆炖牛腩,20,False
+10,False,cabbage,手撕包菜,5,False
+30,True,chicken thigh,照烧鸡腿,10,False
+30,True,chicken wings,烤鸡翅,10,False
+40,True,chicken drumstick,烤鸡腿,10,False
+30,True,salmon;tofu,三文鱼豆腐,20,False
+60,True,pork shoulder;vermicelli,猪肉炖粉条,20,False
+30,True,pork ribs,豉汁排骨,15,False
+15,False,winter melon,炒冬瓜,8,False
+10,False,Sigua,丝瓜鸡蛋汤,10,False
+10,False,brussel sprouts,蚝油小包菜,15,False
+10,False,tofu;spinach,菠菜豆腐汤,10,False

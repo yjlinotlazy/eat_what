@@ -1,51 +1,92 @@
-# 吃啥
+# 吃啥 (`eat-what`)
 
-根据一些用户提示来生成一周菜谱和原材料。要考虑的因素有，时间，食材多样性，肉菜比例。用户可以提供符合格式要求的菜谱列表。
+基于菜谱 CSV 生成每周菜单、输出采购清单，并提供交互式菜谱管理工具。
 
-## 基本功能
+## 功能
 
-### 用户输入
+- `eat-what`：生成每周菜单（默认 7 个荤主菜）并追加若干素菜结果。
+- `eat-what-recipe`：新增菜谱（支持从已有食材中选择，也支持新增食材）。
+- `eat-what-pick`：先选择食材，再列出所有这些食材能做的菜谱。
 
-用户可以输入的变量有：
+## 安装
 
- - 时间：每周可以用来烹饪的时间。
- - 菜谱文件
-
-### 要求
-
- - 食材多样性：避免一周内重复使用相同的食材。
- - 总耗时：总耗时必须低于用户给的烹饪时限。
-
-### 项目结构和步骤
- - 数据存储：CSV文件
- - 菜谱表格包括字段如：菜名、所需食材、准备时间、烹饪时间、是否含肉等。
-
-### 生成一周菜谱
-
-生成一周菜谱时，根据用户的要求，自动考虑食材的多样性、时间限制。
-
-### Python模块：
-使用pandas来管理CSV数据。
-使用random库来生成一周的菜谱，或者你可以基于某些算法来做更精准的匹配。
-
-## 快速开始
-
-安装依赖：
-
-```
+```bash
 pip install -e .
 ```
 
-生成一周菜谱：
+## 数据文件
 
-```
-eat-what --recipes data/recipes.csv --max-time 300
+默认菜谱文件：`data/recipes.csv`。用户可提供自己的菜谱文件，但必须符合同一个格式。
+
+当前列：
+- `cook_time`
+- `has_meat`
+- `ingredients`（分号分隔，如 `pork belly;ginger`）
+- `name`
+- `prep_time`
+- `spicy`（默认 `False`）
+
+说明：
+- 读取的时候如果出错，会显示哪一行错了并跳过，不会中断程序。
+
+## CLI 用法
+
+### 1) 生成菜单：`eat-what`
+
+基本款
+
+```bash
+eat-what
 ```
 
-添加菜谱和原料：
+提供自己的菜单
 
-```
-eat-what-recipe --recipes data/recpes.csv
+```bash
+eat-what --recipes ~/my_recipes.csv
 ```
 
-进入cli引导添加菜谱
+完整自定义：
+
+```bash
+eat-what \
+  --recipes data/recipes.csv \
+  --max-time 60 \
+  --max-weekly-time 400 \
+  --max-overlap 6 \
+  --veg-dishes 3 \
+  --seed 42
+```
+
+参数说明：
+- `--max-time, -t`：单道菜最多允许几分钟（`prep_time + cook_time`）。
+- `--max-weekly-time, -m`：一周做菜总耗时（不包括素菜）。
+- `--max-overlap, -o`：最多允许几样食材重复。
+- `--veg-dishes, -v`：额外的素菜数量，默认 `3`。
+- `--seed, -s`：随机种子，基本不会用。
+
+#### 实现方法：
+
+- 主菜单默认按 `days=7` 随机选择 7 道含肉菜，从肉类菜谱里选。随机选出来的如果超过每周时限，就重来一轮。
+- 如果存在鱼类菜谱，会保证结果里至少 1 道鱼类。
+- 再从素菜谱里选 `-v` 指定数量的素菜（可重复）。
+
+### 2) 新增菜谱：`eat-what-recipe`
+
+```bash
+eat-what-recipe --recipes data/recipes.csv
+```
+
+### 3) 食材推导菜谱：`eat-what-pick`
+
+```bash
+eat-what-pick --recipes data/recipes.csv
+```
+
+## 代码结构
+
+- `src/eat_what/cli.py`：主菜单 CLI。
+- `src/eat_what/recipe_cli.py`：新增菜谱 CLI。
+- `src/eat_what/pick_cli.py`：食材反查菜谱 CLI。
+- `src/eat_what/planner.py`：菜单生成逻辑。
+- `src/eat_what/storage.py`：CSV 读写与校验。
+- `src/eat_what/text_format.py`：终端对齐与颜色封装。

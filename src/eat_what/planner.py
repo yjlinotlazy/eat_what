@@ -6,7 +6,7 @@ Overall logic:
 - Build a meat-heavy weekly plan of length `days` (default 7), trying to
   minimize ingredient overlap and stay under a weekly time cap.
 - If any fish recipes exist, force at least one fish dish in the meat plan.
-- Append 3 extra veg dishes (with replacement) as a best-effort add-on.
+- Append configurable extra veg dishes (with replacement) as a best-effort add-on.
 """
 
 from dataclasses import dataclass
@@ -44,13 +44,16 @@ class WeeklyPlanner:
         max_total_time_per_dish: int | None = None,
         max_weekly_time: int | None = None,
         max_overlap: int = 6,
+        veg_dishes: int = 3,
         max_attempts: int = 200,
     ) -> PlanResult:
-        """Build a weekly plan and append 3 extra veg dishes if possible."""
+        """Build a weekly plan and append extra veg dishes if possible."""
 
         # Recipe collection and validation
         if not self._recipes:
             raise ValueError("No recipes available to plan.")
+        if veg_dishes < 0:
+            raise ValueError("veg_dishes must be non-negative.")
 
         recipes = self._filter_by_time(self._recipes, max_total_time_per_dish)
         if not recipes:
@@ -115,8 +118,12 @@ class WeeklyPlanner:
         if best_meat is None:
             raise ValueError("Unable to build a weekly plan with given constraints.")
 
-        # Best effort to add 3 veg dishes
-        veg_selection = self._sample_dishes(veg_recipes, 3, with_replacement=True)
+        # Best effort to add configured veg dishes
+        veg_selection = (
+            self._sample_dishes(veg_recipes, veg_dishes, with_replacement=True)
+            if veg_dishes > 0 and veg_recipes
+            else []
+        )
 
         result = PlanResult(
             recipes=tuple(best_meat + veg_selection),
