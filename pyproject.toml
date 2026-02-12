@@ -1,0 +1,21 @@
+[build-system]
+requires = ["setuptools>=69", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "eat-what"
+version = "0.1.0"
+description = "Weekly menu planner based on time, ingredient diversity, and meat/veg ratio."
+readme = "README.md"
+requires-python = ">=3.9"
+dependencies = ["pandas>=2.0"]
+
+[project.scripts]
+eat-what = "eat_what.cli:main"
+eat-what-recipe = "eat_what.recipe_cli:main"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]

@@ -1,0 +1,11 @@
+name,ingredients,prep_time,cook_time,has_meat
+红烧肉,pork belly,15,60,True
+土豆炖牛腩,beef brisket;potato,20,90,True
+手撕包菜,cabbage,5,10,False
+照烧鸡腿,chicken thigh,10,30,True
+烤鸡翅,chicken wings,10,30,True
+烤鸡腿,chicken drumstick,10,40,True
+三文鱼豆腐,salmon;tofu,20,30,True
+猪肉炖粉条,pork shoulder;vermicelli,20,60,True
+豉汁排骨,pork ribs,15,30,True
+炒冬瓜,winter melon,8,15,False
