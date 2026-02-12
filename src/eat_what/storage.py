@@ -20,6 +20,7 @@ class Recipe:
     prep_time: int
     cook_time: int
     has_meat: bool
+    spicy: bool = False
 
     @property
     def total_time(self) -> int:
@@ -34,12 +35,35 @@ REQUIRED_COLUMNS = {
     "cook_time",
     "has_meat",
 }
+OUTPUT_COLUMNS = (
+    "cook_time",
+    "has_meat",
+    "ingredients",
+    "name",
+    "prep_time",
+    "spicy",
+)
 
 
 def _split_list(value: str) -> tuple[str, ...]:
     """Split a semicolon-separated list into a tuple."""
     items = [item.strip() for item in value.split(";") if item.strip()]
     return tuple(items)
+
+
+def _parse_bool(value: object) -> bool:
+    """Parse CSV boolean-like values in a predictable way."""
+    if isinstance(value, bool):
+        return value
+    if value is None:
+        return False
+
+    text = str(value).strip().lower()
+    if text in {"1", "true", "t", "yes", "y"}:
+        return True
+    if text in {"0", "false", "f", "no", "n", ""}:
+        return False
+    raise ValueError(f"Invalid boolean value: {value}")
 
 
 def load_recipes(path: str | Path) -> list[Recipe]:
@@ -62,7 +86,8 @@ def load_recipes(path: str | Path) -> list[Recipe]:
                     ingredients=_split_list(str(row["ingredients"]).strip()),
                     prep_time=int(row["prep_time"]),
                     cook_time=int(row["cook_time"]),
-                    has_meat=bool(row["has_meat"]),
+                    has_meat=_parse_bool(row["has_meat"]),
+                    spicy=_parse_bool(row["spicy"]) if "spicy" in df.columns else False,
                 )
             )
         except Exception as exc:
@@ -83,8 +108,9 @@ def save_recipes(path: str | Path, recipes: Iterable[Recipe]) -> None:
                 "prep_time": recipe.prep_time,
                 "cook_time": recipe.cook_time,
                 "has_meat": recipe.has_meat,
+                "spicy": recipe.spicy,
             }
         )
 
-    df = pd.DataFrame(rows, columns=sorted(REQUIRED_COLUMNS))
+    df = pd.DataFrame(rows, columns=OUTPUT_COLUMNS)
     df.to_csv(path, index=False)

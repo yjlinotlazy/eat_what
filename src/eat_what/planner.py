@@ -6,15 +6,19 @@ Overall logic:
 - Build a meat-heavy weekly plan of length `days` (default 7), trying to
   minimize ingredient overlap and stay under a weekly time cap.
 - If any fish recipes exist, force at least one fish dish in the meat plan.
-- Append configurable extra veg dishes (with replacement) as a best-effort add-on.
+- Append configurable non-spicy veg dishes (with replacement) as a best-effort add-on.
+- Append configurable spicy dishes from spicy recipes only as best effort.
 """
 
 from dataclasses import dataclass
+import logging
 from typing import Iterable
 import random
 
 from .ingredients_meat import INGREDIENT_MEAT, MeatKind
 from .storage import Recipe
+
+logger = logging.getLogger(__name__)
 
 
 @dataclass(frozen=True)
@@ -45,6 +49,7 @@ class WeeklyPlanner:
         max_weekly_time: int | None = None,
         max_overlap: int = 6,
         veg_dishes: int = 3,
+        spicy_dishes: int = 0,
         max_attempts: int = 200,
     ) -> PlanResult:
         """Build a weekly plan and append extra veg dishes if possible."""
@@ -54,6 +59,8 @@ class WeeklyPlanner:
             raise ValueError("No recipes available to plan.")
         if veg_dishes < 0:
             raise ValueError("veg_dishes must be non-negative.")
+        if spicy_dishes < 0:
+            raise ValueError("spicy_dishes must be non-negative.")
 
         recipes = self._filter_by_time(self._recipes, max_total_time_per_dish)
         if not recipes:
@@ -61,14 +68,17 @@ class WeeklyPlanner:
 
         meat_target = self._days
 
-        meat_recipes = [r for r in recipes if r.has_meat]
+        non_spicy_recipes = [r for r in recipes if not r.spicy]
+        spicy_recipes = [r for r in recipes if r.spicy]
+
+        meat_recipes = [r for r in non_spicy_recipes if r.has_meat]
         fish_names = {
             name for name, item in INGREDIENT_MEAT.items() if item.kind == MeatKind.FISH
         }
         fish_recipes = [
             r for r in meat_recipes if any(ing in fish_names for ing in r.ingredients)
         ]
-        veg_recipes = [r for r in recipes if not r.has_meat]
+        veg_recipes = [r for r in non_spicy_recipes if not r.has_meat]
 
         if not meat_recipes:
             return None
@@ -118,15 +128,25 @@ class WeeklyPlanner:
         if best_meat is None:
             raise ValueError("Unable to build a weekly plan with given constraints.")
 
-        # Best effort to add configured veg dishes
+        # Best effort to add configured non-spicy veg dishes
         veg_selection = (
             self._sample_dishes(veg_recipes, veg_dishes, with_replacement=True)
             if veg_dishes > 0 and veg_recipes
             else []
         )
+        spicy_selection = (
+            self._sample_dishes(spicy_recipes, spicy_dishes, with_replacement=True)
+            if spicy_dishes > 0 and spicy_recipes
+            else []
+        )
+        if spicy_dishes > 0 and not spicy_recipes:
+            logger.warning(
+                "No spicy recipes available; requested %s spicy dishes, returning best effort.",
+                spicy_dishes,
+            )
 
         result = PlanResult(
-            recipes=tuple(best_meat + veg_selection),
+            recipes=tuple(best_meat + veg_selection + spicy_selection),
             total_time=best_total_time,
             ingredient_overlap=best_overlap,
         )

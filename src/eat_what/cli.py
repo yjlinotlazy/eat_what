@@ -56,6 +56,13 @@ def build_parser() -> argparse.ArgumentParser:
         help="Number of veg dishes to append to results.",
     )
     parser.add_argument(
+        "--spicy-dishes",
+        "-s",
+        type=int,
+        default=0,
+        help="Number of spicy dishes to append to results.",
+    )
+    parser.add_argument(
         "--seed",
         type=int,
         default=None,
@@ -157,6 +164,7 @@ def main() -> int:
         max_weekly_time=args.max_weekly_time,
         max_overlap=args.max_overlap,
         veg_dishes=args.veg_dishes,
+        spicy_dishes=args.spicy_dishes,
     )
 
     print_plan(result)
