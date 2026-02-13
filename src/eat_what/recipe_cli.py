@@ -196,7 +196,10 @@ def main() -> int:
         return 1
     prep_time = _prompt_int("Prep time (minutes): ")
     cook_time = _prompt_int("Cook time (minutes): ")
-    spicy = _prompt_bool("Is this dish spicy? (y/N): ")
+    if "辣" in name:
+        spicy = True
+    else:
+        spicy = _prompt_bool("Is this dish spicy? (y/N): ")
 
     has_meat = any(ingredient in INGREDIENT_MEAT for ingredient in ingredients)
     recipe = Recipe(

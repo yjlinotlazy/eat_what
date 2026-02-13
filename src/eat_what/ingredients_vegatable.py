@@ -37,5 +37,6 @@ INGREDIENT_VEGATABLE = {
     "brussel sprouts": VegatableIngredient("小包菜"),
     "scallion": VegatableIngredient("大葱"),
     "napa cabbage": VegatableIngredient("白菜"),
+    "pepper": VegatableIngredient("辣椒"),
 
 }

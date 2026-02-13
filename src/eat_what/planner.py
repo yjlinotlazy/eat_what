@@ -29,6 +29,32 @@ class PlanResult:
     ingredient_overlap: int
 
 
+def find_remaining_meat(
+    all_recipes: list[Recipe],
+    selected_recipes: list[Recipe],
+) -> list[Recipe]:
+    """Return recipes whose meat kinds do not overlap with selected recipes."""
+    selected_meat_kinds = set()
+    for recipe in selected_recipes:
+        for ingredient in recipe.ingredients:
+            meat = INGREDIENT_MEAT.get(ingredient)
+            if meat is not None:
+                selected_meat_kinds.add(meat.kind)
+
+    remaining: list[Recipe] = []
+    for recipe in all_recipes:
+        recipe_meat_kinds = set()
+        for ingredient in recipe.ingredients:
+            meat = INGREDIENT_MEAT.get(ingredient)
+            if meat is not None:
+                recipe_meat_kinds.add(meat.kind)
+
+        if recipe_meat_kinds.isdisjoint(selected_meat_kinds):
+            remaining.append(recipe)
+
+    return remaining
+
+
 class WeeklyPlanner:
     """Planner that selects recipes with time and overlap constraints."""
     def __init__(
@@ -83,50 +109,18 @@ class WeeklyPlanner:
         if not meat_recipes:
             return None
 
-        # Build a plan for meat
-        best_meat: list[Recipe] | None = None
-        best_total_time: int = 0
-        best_overlap: int = 0
-
-        for _ in range(max_attempts):
-            if fish_recipes:
-                fish_pick = self._sample_dishes(fish_recipes, 1)
-                if not fish_pick:
-                    continue
-                remaining_meat = [r for r in meat_recipes if r not in fish_pick]
-                if meat_target > 1 and len(remaining_meat) < meat_target - 1:
-                    continue
-                meat_selection = list(fish_pick)
-                if meat_target > 1:
-                    rest = self._sample_dishes(remaining_meat, meat_target - 1)
-                    if not rest:
-                        continue
-                    meat_selection.extend(rest)
-                self._random.shuffle(meat_selection)
-            else:
-                meat_selection = self._sample_dishes(meat_recipes, meat_target)
-            if not meat_selection:
-                continue
-
-            total_time = sum(r.total_time for r in meat_selection)
-            if max_weekly_time is not None and total_time > max_weekly_time:
-                continue
-
-            overlap = self._ingredient_meat_overlap(meat_selection)
-
-
-            if overlap <= max_overlap:
-                best_meat = meat_selection
-                best_total_time = total_time
-                best_overlap = overlap
-                break
-            if best_meat is None or total_time < best_total_time:
-                best_meat = meat_selection
-                best_total_time = total_time
-                best_overlap = overlap
-
-        if best_meat is None:
+        best_result = self._find_best_meat_plan(
+            meat_recipes=meat_recipes,
+            fish_recipes=fish_recipes,
+            meat_target=meat_target,
+            max_weekly_time=max_weekly_time,
+            max_overlap=max_overlap,
+            max_attempts=max_attempts,
+        )
+        if best_result is None:
             raise ValueError("Unable to build a weekly plan with given constraints.")
+
+        best_meat, best_total_time, best_overlap = best_result
 
         # Best effort to add configured non-spicy veg dishes
         veg_selection = (
@@ -151,6 +145,57 @@ class WeeklyPlanner:
             ingredient_overlap=best_overlap,
         )
         return result
+
+    def _find_best_meat_plan(
+        self,
+        *,
+        meat_recipes: list[Recipe],
+        fish_recipes: list[Recipe],
+        meat_target: int,
+        max_weekly_time: int | None,
+        max_overlap: int,
+        max_attempts: int,
+    ) -> tuple[list[Recipe], int, int] | None:
+        """Try multiple random samples and return the best meat-plan candidate."""
+        best_meat: list[Recipe] | None = None
+        best_total_time: int = 0
+        best_overlap: int = 0
+
+        for _ in range(max_attempts):
+            if fish_recipes:
+                fish_pick = self._sample_dishes(fish_recipes, 1)
+                if not fish_pick:
+                    continue
+                remaining_meat = find_remaining_meat(meat_recipes, list(fish_pick))
+                if meat_target > 1 and len(remaining_meat) < meat_target - 1:
+                    continue
+                meat_selection = list(fish_pick)
+                if meat_target > 1:
+                    rest = self._sample_dishes(remaining_meat, meat_target - 1)
+                    if not rest:
+                        continue
+                    meat_selection.extend(rest)
+                self._random.shuffle(meat_selection)
+            else:
+                meat_selection = self._sample_dishes(meat_recipes, meat_target)
+            if not meat_selection:
+                continue
+
+            total_time = sum(r.total_time for r in meat_selection)
+            if max_weekly_time is not None and total_time > max_weekly_time:
+                continue
+
+            overlap = self._ingredient_meat_overlap(meat_selection)
+            if overlap <= max_overlap:
+                return meat_selection, total_time, overlap
+            if best_meat is None or total_time < best_total_time:
+                best_meat = meat_selection
+                best_total_time = total_time
+                best_overlap = overlap
+
+        if best_meat is None:
+            return None
+        return best_meat, best_total_time, best_overlap
 
     def _filter_by_time(
         self, recipes: list[Recipe], max_total_time_per_dish: int | None
