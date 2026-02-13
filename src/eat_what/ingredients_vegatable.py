@@ -38,5 +38,5 @@ INGREDIENT_VEGATABLE = {
     "scallion": VegatableIngredient("大葱"),
     "napa cabbage": VegatableIngredient("白菜"),
     "pepper": VegatableIngredient("辣椒"),
-
+    "green pepper": VegatableIngredient("青椒"),
 }

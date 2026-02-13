@@ -8,7 +8,7 @@ from pathlib import Path
 from .ingredients_meat import INGREDIENT_MEAT
 from .ingredients_vegatable import INGREDIENT_VEGATABLE
 from .selection import select_from
-from .storage import load_recipes
+from .storage import default_recipes_path, load_recipes
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -18,7 +18,7 @@ def build_parser() -> argparse.ArgumentParser:
     )
     parser.add_argument(
         "--recipes",
-        default="data/recipes.csv",
+        default=default_recipes_path(),
         help="Path to recipes CSV.",
     )
     return parser

@@ -22,3 +22,5 @@ cook_time,has_meat,ingredients,name,prep_time,spicy
 25,True,meatball;vermicelli;zucchini,肉丸西葫芦粉丝汤,5,False
 20,True,meatball;vermicelli;napa cabbage,肉丸白菜粉丝汤,7,False
 15,False,eggplant;green beans;pepper,辣椒炒豆角茄子,10,True
+30,True,beef roast;onion;green pepper,pot roast,30,False
+20,True,whole chicken;carrot;potato;onion,咖喱鸡,30,False

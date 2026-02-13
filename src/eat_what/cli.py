@@ -9,7 +9,7 @@ from pathlib import Path
 from .ingredients_meat import INGREDIENT_MEAT
 from .ingredients_vegatable import INGREDIENT_VEGATABLE
 from .planner import WeeklyPlanner
-from .storage import load_recipes
+from .storage import default_recipes_path, load_recipes
 from .text_format import color_code, display_width, ljust_display
 
 COLOR_ORANGE = "\x1b[38;5;208m"
@@ -25,7 +25,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="Generate a weekly meal plan.")
     parser.add_argument(
         "--recipes",
-        default="data/recipes.csv",
+        default=default_recipes_path(),
         help="Path to recipes CSV.",
     )
     parser.add_argument(

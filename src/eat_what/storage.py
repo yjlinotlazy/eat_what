@@ -45,6 +45,19 @@ OUTPUT_COLUMNS = (
 )
 
 
+def default_recipes_path() -> Path:
+    """Return the default recipes.csv path relative to package/source layout."""
+    package_data_path = Path(__file__).resolve().with_name("data") / "recipes.csv"
+    if package_data_path.exists():
+        return package_data_path
+
+    repo_data_path = Path(__file__).resolve().parents[2] / "data" / "recipes.csv"
+    if repo_data_path.exists():
+        return repo_data_path
+
+    return package_data_path
+
+
 def _split_list(value: str) -> tuple[str, ...]:
     """Split a semicolon-separated list into a tuple."""
     items = [item.strip() for item in value.split(";") if item.strip()]

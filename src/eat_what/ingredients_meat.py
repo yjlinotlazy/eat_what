@@ -43,5 +43,7 @@ INGREDIENT_MEAT = {
     "shrimp": MeatIngredient(MeatKind.SHRIMP, "虾"),
     "beef tendon": MeatIngredient(MeatKind.BEEF, "牛筋"),
     "meatball": MeatIngredient(MeatKind.PORK, "肉丸"),
+    "beef roast": MeatIngredient(MeatKind.BEEF, "炖牛肉的肉"),
+    "whole chicken": MeatIngredient(MeatKind.CHICKEN, "整鸡鸡块"),
 
 }
