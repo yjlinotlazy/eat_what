@@ -112,7 +112,7 @@ class WeeklyPlanner:
             if max_weekly_time is not None and total_time > max_weekly_time:
                 continue
 
-            overlap = self._ingredient_overlap(meat_selection)
+            overlap = self._ingredient_meat_overlap(meat_selection)
 
 
             if overlap <= max_overlap:
@@ -175,11 +175,14 @@ class WeeklyPlanner:
         return selection
 
     @staticmethod
-    def _ingredient_overlap(recipes: Iterable[Recipe]) -> int:
-        """Count repeated ingredients across recipes."""
+    def _ingredient_meat_overlap(recipes: Iterable[Recipe]) -> int:
+        """Count repeated meat types across recipes."""
         counts: dict[str, int] = {}
         for recipe in recipes:
             for ingredient in recipe.ingredients:
-                counts[ingredient] = counts.get(ingredient, 0) + 1
-
+                try:
+                    meat_type = INGREDIENT_MEAT.get(ingredient).kind
+                    counts[meat_type] = counts.get(meat_type, 0) + 1
+                except AttributeError:
+                    continue
         return sum(count - 1 for count in counts.values() if count > 1)

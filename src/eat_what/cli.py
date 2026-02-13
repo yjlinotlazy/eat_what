@@ -116,7 +116,7 @@ def print_plan(result) -> None:
 
     print("-")
     print(f"你在做饭上浪费的时间: {result.total_time} min")
-    print(f"重复吃了几个荤菜: {result.ingredient_overlap}")
+    print(f"肉类重复次数: {result.ingredient_overlap}")
 
     # Extract ingredients from all recipe and display the total as
     # the shopping list
