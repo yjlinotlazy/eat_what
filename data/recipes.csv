@@ -15,3 +15,9 @@ cook_time,has_meat,ingredients,name,prep_time,spicy
 30,True,beef piece;tofu;brussel sprouts;broccoli,麻辣香锅,30,True
 15,False,tofu,麻婆豆腐,5,True
 20,True,mussel,炒青口,10,False
+20,True,shrimp;vermicelli,蒜蓉粉丝虾,10,False
+40,True,pork ribs;green beans,豆角烧排骨,10,False
+40,True,beef brisket;cabbage;onion;tomato;potato,罗宋汤,20,False
+40,True,beef tendon;tofu;scallion,牛筋烧豆腐,20,False
+25,True,meatball;vermicelli;zucchini,肉丸西葫芦粉丝汤,5,False
+20,True,meatball;vermicelli;napa cabbage,肉丸白菜粉丝汤,7,False

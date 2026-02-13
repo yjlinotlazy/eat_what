@@ -35,4 +35,7 @@ INGREDIENT_VEGATABLE = {
     "zucchini": VegatableIngredient("西葫芦"),
     "Sigua": VegatableIngredient("丝瓜"),
     "brussel sprouts": VegatableIngredient("小包菜"),
+    "scallion": VegatableIngredient("大葱"),
+    "napa cabbage": VegatableIngredient("白菜"),
+
 }

@@ -12,6 +12,8 @@ class MeatKind(Enum):
     LAMB = "lamb"
     DUCK = "duck"
     FISH = "fish"
+    SHRIMP = "shrimp"
+    SHELL = "shell"
 
 
 @dataclass(frozen=True)
@@ -35,7 +37,11 @@ INGREDIENT_MEAT = {
     "pork belly": MeatIngredient(MeatKind.PORK, "五花肉"),
     "pork ribs": MeatIngredient(MeatKind.PORK, "排骨"),
     "pork shoulder": MeatIngredient(MeatKind.PORK, "猪肩肉"),
-    "salmon": MeatIngredient(MeatKind.FISH, "三文鱼"),    "beef piece": MeatIngredient(MeatKind.BEEF, "火锅牛肉片"),
-    "mussel": MeatIngredient(MeatKind.FISH, "青口"),
+    "salmon": MeatIngredient(MeatKind.FISH, "三文鱼"),
+    "beef piece": MeatIngredient(MeatKind.BEEF, "火锅牛肉片"),
+    "mussel": MeatIngredient(MeatKind.SHELL, "青口"),
+    "shrimp": MeatIngredient(MeatKind.SHRIMP, "虾"),
+    "beef tendon": MeatIngredient(MeatKind.BEEF, "牛筋"),
+    "meatball": MeatIngredient(MeatKind.PORK, "肉丸"),
 
 }
