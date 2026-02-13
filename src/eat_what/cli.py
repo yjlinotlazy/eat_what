@@ -15,6 +15,7 @@ from .text_format import color_code, display_width, ljust_display
 COLOR_ORANGE = "\x1b[38;5;208m"
 COLOR_GREEN = "\x1b[32m"
 COLOR_BLUE = "\x1b[34m"
+COLOR_PURPLE = "\x1b[35m"
 COLOR_RED = "\x1b[31m"
 COLOR_RESET = "\x1b[0m"
 
@@ -89,7 +90,9 @@ def print_plan(result) -> None:
     # Print recipe for the week
     for idx, recipe in enumerate(result.recipes, start=1):
         is_fish = any(ing in fish_names for ing in recipe.ingredients)
-        if is_fish:
+        if recipe.spicy:
+            name = color_code(recipe.name, COLOR_PURPLE, COLOR_RESET)
+        elif is_fish:
             name = color_code(recipe.name, COLOR_BLUE, COLOR_RESET)
         elif not recipe.has_meat:
             name = color_code(recipe.name, COLOR_GREEN, COLOR_RESET)

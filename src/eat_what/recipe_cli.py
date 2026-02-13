@@ -30,6 +30,16 @@ def _prompt_non_empty(prompt: str) -> str:
         print("Please enter a non-empty value.")
 
 
+def _prompt_unique_name(existing_names: set[str]) -> str:
+    """Prompt until a recipe name is non-empty and unique."""
+    while True:
+        name = _prompt_non_empty("Recipe name: ")
+        if name in existing_names:
+            print("Recipe name already exists. Please choose a different name.")
+            continue
+        return name
+
+
 def _prompt_int(prompt: str) -> int:
     """Prompt until a non-negative integer is entered."""
     while True:
@@ -75,12 +85,20 @@ def _insert_into_dict(path: Path, dict_name: str, entry_line: str) -> None:
 
 
 def _prompt_choice(prompt: str, options: list[str]) -> str:
-    """Prompt for a choice from a fixed set."""
+    """Prompt for a choice from a fixed set by number."""
+    print(prompt)
+    for idx, option in enumerate(options, start=1):
+        print(f"{idx}. {option}")
     while True:
-        raw = input(prompt).strip().upper()
-        if raw in options:
-            return raw
-        print(f"Please enter one of: {', '.join(options)}")
+        raw = input("Select option number: ").strip()
+        if not raw.isdigit():
+            print("Please enter a valid number.")
+            continue
+        idx = int(raw)
+        if idx < 1 or idx > len(options):
+            print(f"Please enter a number between 1 and {len(options)}.")
+            continue
+        return options[idx - 1]
 
 
 def _add_meat_ingredient() -> None:
@@ -148,10 +166,11 @@ def _prompt_ingredients() -> list[str]:
         chosen: list[str] = []
         chosen_set: set[str] = set()
         while True:
-            raw = input("Select numbers (comma-separated, blank to finish): ").strip()
+            raw = input("Select numbers (comma-separated, blank to finish): ")
             if not raw:
                 break
-            parts = [part.strip() for part in raw.split(",") if part.strip()]
+            finished = raw[-1] == ' '
+            parts = [part.strip() for part in raw.strip().split(",") if part.strip()]
             for part in parts:
                 if not part.isdigit():
                     print(f"Invalid number: {part}")
@@ -165,6 +184,8 @@ def _prompt_ingredients() -> list[str]:
                     continue
                 chosen.append(name)
                 chosen_set.add(name)
+            if finished:
+                break
         return chosen
 
     while True:
@@ -195,7 +216,11 @@ def main() -> int:
     parser = build_parser()
     args = parser.parse_args()
 
-    name = _prompt_non_empty("Recipe name: ")
+    recipes_path = Path(args.recipes)
+    recipes = load_recipes(recipes_path)
+    existing_names = {recipe.name for recipe in recipes}
+
+    name = _prompt_unique_name(existing_names)
     ingredients = _prompt_ingredients()
     if not ingredients:
         print("No ingredients provided. Aborting.")
@@ -214,8 +239,6 @@ def main() -> int:
         spicy=spicy,
     )
 
-    recipes_path = Path(args.recipes)
-    recipes = load_recipes(recipes_path)
     recipes.append(recipe)
     save_recipes(recipes_path, recipes)
 
