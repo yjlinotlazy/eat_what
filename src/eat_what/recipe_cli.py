@@ -48,6 +48,17 @@ def _prompt_int(prompt: str) -> int:
         return value
 
 
+def _prompt_bool(prompt: str) -> bool:
+    """Prompt until a yes/no value is entered."""
+    while True:
+        raw = input(prompt).strip().lower()
+        if raw in {"y", "yes", "true", "1"}:
+            return True
+        if raw in {"n", "no", "false", "0", ""}:
+            return False
+        print("Please enter y/n.")
+
+
 def _insert_into_dict(path: Path, dict_name: str, entry_line: str) -> None:
     """Insert a new entry into a module-level dict in-place."""
     text = path.read_text(encoding="utf-8")
@@ -191,6 +202,7 @@ def main() -> int:
         return 1
     prep_time = _prompt_int("Prep time (minutes): ")
     cook_time = _prompt_int("Cook time (minutes): ")
+    spicy = _prompt_bool("Is this dish spicy? (y/N): ")
 
     has_meat = any(ingredient in INGREDIENT_MEAT for ingredient in ingredients)
     recipe = Recipe(
@@ -199,6 +211,7 @@ def main() -> int:
         prep_time=prep_time,
         cook_time=cook_time,
         has_meat=has_meat,
+        spicy=spicy,
     )
 
     recipes_path = Path(args.recipes)

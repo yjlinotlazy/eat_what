@@ -12,3 +12,4 @@ cook_time,has_meat,ingredients,name,prep_time,spicy
 10,False,Sigua,丝瓜鸡蛋汤,10,False
 10,False,brussel sprouts,蚝油小包菜,15,False
 10,False,tofu;spinach,菠菜豆腐汤,10,False
+30,True,beef piece;tofu;brussel sprouts;broccoli,麻辣香锅,30,True

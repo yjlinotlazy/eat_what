@@ -35,5 +35,6 @@ INGREDIENT_MEAT = {
     "pork belly": MeatIngredient(MeatKind.PORK, "五花肉"),
     "pork ribs": MeatIngredient(MeatKind.PORK, "排骨"),
     "pork shoulder": MeatIngredient(MeatKind.PORK, "猪肩肉"),
-    "salmon": MeatIngredient(MeatKind.FISH, "三文鱼"),
+    "salmon": MeatIngredient(MeatKind.FISH, "三文鱼"),    "beef piece": MeatIngredient(MeatKind.BEEF, "火锅牛肉片"),
+
 }
