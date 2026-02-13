@@ -7,6 +7,7 @@ from pathlib import Path
 
 from .ingredients_meat import INGREDIENT_MEAT, MeatIngredient, MeatKind
 from .ingredients_vegatable import INGREDIENT_VEGATABLE, VegatableIngredient
+from .selection import select_from
 from .storage import Recipe, load_recipes, save_recipes
 
 
@@ -144,50 +145,6 @@ def _add_veg_ingredient() -> None:
 
 def _prompt_ingredients() -> list[str]:
     """Prompt to select ingredients from meat and veg lists."""
-    def select_from(items: dict[str, str], title: str) -> list[str]:
-        names = sorted(items)
-        if not names:
-            return []
-
-        print(title)
-        per_line = 3
-        green = "\x1b[32m"
-        reset = "\x1b[0m"
-        formatted = [
-            f"{green}{idx}.{reset} {items[name]} ({name})"
-            for idx, name in enumerate(names, start=1)
-        ]
-        col_width = max(len(text) for text in formatted)
-        for start in range(0, len(formatted), per_line):
-            row = formatted[start : start + per_line]
-            padded = [text.ljust(col_width) for text in row]
-            print("   ".join(padded))
-
-        chosen: list[str] = []
-        chosen_set: set[str] = set()
-        while True:
-            raw = input("Select numbers (comma-separated, blank to finish): ")
-            if not raw:
-                break
-            finished = raw[-1] == ' '
-            parts = [part.strip() for part in raw.strip().split(",") if part.strip()]
-            for part in parts:
-                if not part.isdigit():
-                    print(f"Invalid number: {part}")
-                    continue
-                idx = int(part)
-                if idx < 1 or idx > len(names):
-                    print(f"Out of range: {idx}")
-                    continue
-                name = names[idx - 1]
-                if name in chosen_set:
-                    continue
-                chosen.append(name)
-                chosen_set.add(name)
-            if finished:
-                break
-        return chosen
-
     while True:
         action = input(
             "Add new ingredient? (m=meat, v=veg, enter to continue): "
@@ -205,8 +162,20 @@ def _prompt_ingredients() -> list[str]:
     veg_cn = {name: item.cn for name, item in INGREDIENT_VEGATABLE.items()}
 
     selected = []
-    selected.extend(select_from(meat_cn, "Select meat ingredients:"))
-    selected.extend(select_from(veg_cn, "Select veg ingredients:"))
+    selected.extend(
+        select_from(
+            meat_cn,
+            "Select meat ingredients:",
+            finish_on_trailing_space=True,
+        )
+    )
+    selected.extend(
+        select_from(
+            veg_cn,
+            "Select veg ingredients:",
+            finish_on_trailing_space=True,
+        )
+    )
 
     return selected
 
