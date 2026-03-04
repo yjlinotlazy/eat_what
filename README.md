@@ -39,6 +39,8 @@ pip install -e .
 eat-what
 ```
 
+![img](imgs/1.png)
+
 提供自己的菜单
 
 ```bash
