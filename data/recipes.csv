@@ -24,3 +24,5 @@ cook_time,has_meat,ingredients,name,prep_time,spicy
 15,False,eggplant;green beans;pepper,辣椒炒豆角茄子,10,True
 30,True,beef roast;onion;green pepper,pot roast,30,False
 20,True,whole chicken;carrot;potato;onion,咖喱鸡,30,False
+20,True,flat fish,蒸燕子鱼,10,False
+20,True,beef steak,煎牛排,20,False

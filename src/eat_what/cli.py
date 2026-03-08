@@ -64,6 +64,12 @@ def build_parser() -> argparse.ArgumentParser:
         help="Number of spicy dishes to append to results.",
     )
     parser.add_argument(
+        "--list",
+        "-l",
+        action="store_true",
+        help="List all recipes and exit.",
+    )
+    parser.add_argument(
         "--seed",
         type=int,
         default=None,
@@ -153,6 +159,26 @@ def print_plan(result) -> None:
             print("   ".join(padded))
 
 
+def print_recipe_list(recipes) -> None:
+    """Print all recipes in CSV order."""
+    print("All Recipes")
+    print("-")
+    fish_names = {
+        name for name, item in INGREDIENT_MEAT.items() if item.kind.value == "fish"
+    }
+    for idx, recipe in enumerate(recipes, start=1):
+        is_fish = any(ing in fish_names for ing in recipe.ingredients)
+        if recipe.spicy:
+            name = color_code(recipe.name, COLOR_PURPLE, COLOR_RESET)
+        elif is_fish:
+            name = color_code(recipe.name, COLOR_BLUE, COLOR_RESET)
+        elif not recipe.has_meat:
+            name = color_code(recipe.name, COLOR_GREEN, COLOR_RESET)
+        else:
+            name = recipe.name
+        print(f"{idx}. {name}")
+
+
 def main() -> int:
     """Entry point for the meal planner CLI."""
     parser = build_parser()
@@ -160,6 +186,10 @@ def main() -> int:
 
     recipes_path = Path(args.recipes)
     recipes = load_recipes(recipes_path)
+    if args.list:
+        print_recipe_list(recipes)
+        return 0
+
     planner = WeeklyPlanner(recipes, seed=args.seed)
 
     result = planner.plan(

@@ -45,5 +45,5 @@ INGREDIENT_MEAT = {
     "meatball": MeatIngredient(MeatKind.PORK, "肉丸"),
     "beef roast": MeatIngredient(MeatKind.BEEF, "炖牛肉的肉"),
     "whole chicken": MeatIngredient(MeatKind.CHICKEN, "整鸡鸡块"),
-
+    "flat fish": MeatIngredient(MeatKind.FISH, "燕子鱼"),
 }

@@ -39,6 +39,14 @@ pip install -e .
 eat-what
 ```
 
+只列出所有菜谱：
+
+```bash
+eat-what -l
+# 或
+eat-what --list
+```
+
 ![img](imgs/1.png)
 
 提供自己的菜单
@@ -64,6 +72,7 @@ eat-what \
 - `--max-weekly-time, -m`：一周做菜总耗时（不包括素菜）。
 - `--max-overlap, -o`：最多允许几样食材重复。
 - `--veg-dishes, -v`：额外的素菜数量，默认 `3`。
+- `--list, -l`：只打印菜谱列表并退出。
 - `--seed, -s`：随机种子，基本不会用。
 
 #### 实现方法：
