@@ -6,6 +6,7 @@
 It supports:
 
 - generating a weekly meat-focused plan with optional veg/spicy add-ons,
+- listing all recipes from the CSV in CLI order,
 - printing a shopping list aggregated from selected recipes,
 - interactively adding recipes and new ingredients,
 - finding recipes that can be cooked from selected ingredients.
@@ -58,7 +59,7 @@ Core model:
 ## Code Map
 
 - `src/eat_what/cli.py`
-  - planner CLI, output formatting, shopping-list aggregation.
+  - planner CLI, `--list/-l` recipe listing, output formatting, shopping-list aggregation.
 - `src/eat_what/planner.py`
   - planning algorithm and constraints.
 - `src/eat_what/storage.py`
@@ -75,6 +76,8 @@ Core model:
   - veg ingredient dictionary.
 - `src/eat_what/text_format.py`
   - ANSI color and display-width alignment helpers.
+- `tests/test_cli.py`
+  - planner CLI parser/list-mode coverage.
 
 ## Planning Behavior (`WeeklyPlanner.plan`)
 
@@ -101,12 +104,16 @@ Reported metrics in result:
   `PlanResult`; callers generally expect a valid plan object.
 - CLI output uses ANSI colors and width-aware alignment to support mixed
   Chinese/English display.
+- `eat-what --list` / `-l` loads recipes and exits before planner construction.
+- Recipe color rules are shared across weekly-plan and list output:
+  spicy -> purple, fish -> blue, vegetarian -> green.
 - CSV loading is tolerant: invalid rows are skipped with warnings instead of failing fast.
 
 ## Quick Run Commands
 
 ```bash
 eat-what --recipes data/recipes.csv
+eat-what --list
 eat-what-recipe --recipes data/recipes.csv
 eat-what-pick --recipes data/recipes.csv
 ```
